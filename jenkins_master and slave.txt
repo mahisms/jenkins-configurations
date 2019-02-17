@@ -1,0 +1,29 @@
+Creating nodes in jenkins
+=================================
+
+==>manage jenkins-->manage nodes-->
+   new node-->  node name: build_machine
+                description:apachi_tomcat_servers
+ 	       	of executers: 2
+		remote diectory: /var/jenkins ( in node machine create a directory)
+		lables: build_machine_linux
+		launching methods: Launch agent agents via ssh
+		HOs Key verification: Non verify verificatin strategy	
+		host name: remote host ip or hostname
+ 		credentials: add credentials of remote machine(ex: username: root passwd:
+		availability: Keep slave on-line as much as possible
+		tool location: name : JDK
+				Home: java home( we are using java projects so we nned to specify jdk path)
+				name: maven (and mention maven path below.
+				home:/opt/maven --> ok
+====================================================================
+==> executing the jon in slave machine
+====================================================
+==>create a job--> job name--> maven--> 
+-->  "where this project can be run"(enable check box)
+ -->lable Expression:build_machine_linux
+-->select GIT: http://github.com/maven_project
+-->in build step--> golas: clean install package
+
+
+		               

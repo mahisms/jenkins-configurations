@@ -1,0 +1,56 @@
+jenkins Installation:
+==================================================================
+Install java and set path:
+  yum install java-1.8* -y
+   export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.161.b14
+   PATH=$PATH:$JAVA_HOME
+3. Download jenkins on to EC2 instance
+   sudo wget -0 //etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+   rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+ --> Referance Link: https://pkg.jenkins.io/redhat/
+4. Intsall jenkins
+    yum install jenkins -y
+5. Start jenkins service
+   servic jenkins start
+6. Check java and jenkins version
+   java -version
+7. 
+
+
+  code: https://github.com/ValaxyTech/hello-world
+Creating CI and Cd:
+===============================================================
+ code: https://github.com/ValaxyTech/hello-world
+Install maven plugin in  jenkins server.
+ Cretae a job --> Maven Job--> paste the git repository project url--> (in the build option)golas: clean install package--> apply and ok-->
+
+  --> build the job.
+
+====> abpove steps are for CI.
+---->TO deploy war  or jar file in to app server.
+  --> First we need to install deploy and container plugin.
+   manage jenkins--> manage plugins--> install deploy and container plugin without restart.
+
+-->After installing plugn we need to set the credentials.
+  On jenkins console --> credentials->click on jenkins--> global credentials-->add credentials--> here we can add tomcat server's credentials.
+  In tomcat server we ned to add user credentials in tomcat.user.xml file.
+===>   vi tomcat.user.xml
+       <role rolename="manager-gui"/>
+       <role rolename="manager-script"/>
+       <role rolename="manager-jmx"/>
+       <role rolename="manager-status"/> 
+       <user username="admin" password="admin" roles="manager-gui, managr-script, manager-jmx, manager-status"/>
+       <user usrname="deployer" password="deployer" roles="manager-script"/>
+       <user username="role1" password="secret" roles="manager-gui"/>
+-->
+</tomcat-users>
+
+
+==> As above we need to update tomcat-users.xml file.
+
+
+  
+    
+
+
+

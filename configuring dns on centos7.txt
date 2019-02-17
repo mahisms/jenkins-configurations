@@ -1,0 +1,90 @@
+Configuring DNS-service:
+==========================================
+Pre-requists: 2 centos machines (master and slave) 
+	      static ips
+==> Installing dependencies:
+--> yum install bind bind-utils -y
+==> Configure the "/etc/name.conf" file
+	options {
+  			listen-on port 53 {give static ip;}
+			allow quaey: allow any
+			save and exit.
+==> start the service
+	systemctl start named
+	systemctl enable named
+==> check the service is working or not
+	systemctl status named
+==>apply the firewall
+	firewall-cmd --permanent --add-port=53/tcp
+   	firewall-cmd --permanent --add-port=53/udp
+==> firewall-cmd --reload
+==firewall-cmd --list-all
+==>again we need to goto the /etc/named.conf file, to create zones.
+  vi /etc/named.conf
+  shift+G
+  zone "domeain name which we want to create"
+       ex:zone "example.com" IN {
+ 	        type master:
+		file "forward.exaple.com"(it can be any thing, it should be exist on /var/named)
+		allow-update { none; };
+		};
+(172.168.1.1)zone: ( if we want to create another zone, we ll give the ip)save and exit.
+		ex: "1.168.175 in-addr-arpa" N {
+		type master;
+		file "reverse.example.com"(this must be in /var/named)
+		allow-update { none };
+	
+}	
+==> create a forward.exaple.com and reverse.example.com files in /var/namaed location
+   cd /var/named
+copy named.localhost file as forward.exaple.com
+cp named.localhost forward.example.com 
+ -->vi forward.exaple.com
+ -->In SOA  server.exapmle.com root.example.com. (give hostname or ip) (
+@	IN NS server.example.com.
+@	In A  static Ip
+server	In A  static ip
+host	IN A  static Ip
+www	IN A  static Ip
+desktop IN A  static IP address( this is for client)
+client	IN A  static Ip (this is for anothe rclient)
+save and exit.
+==> cp this forward.example.comfile as reverse.example.com
+ --> cp forward.example.com reverse.example.com
+vi reverse.example.com
+	@	IN NS server.example.com.
+@	IN NS  server.example.com(Domain name)
+server	In A   example.com
+host	IN A  static Ip
+www	IN A  static Ip
+desktop IN A  static IP address( this is for client)
+client	IN A  static Ip (this is for anothe rclient)
+11      IN PTR server.example.com
+10	IN PTR desktop.example.com
+
+save and exit.
+-->chown root:named forward.example.com
+-->chown root:named reverse.example.com
+==>To check our configuration is correct or not
+ --> named.checkconf -z /etc/named.conf
+  --> named.check -z forward /var/named/forward.example.com
+  -->named.check -z reverse /var/named/reverse.example.com
+==> restart the service
+  --> systemctl restart named
+==> 
+vi /etc/resolv.conf
+   search example.com
+systemctl restart NetworkManager
+ chekck the connection established on the hostname
+  on server: ping server
+==> ping host
+============================================================
+on client side:
+=======================
+as root user:
+check the hostname of the client
+  --> hostname -f
+    change the hostname as desktop.example.com
+==> 
+    
+==> 

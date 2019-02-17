@@ -1,0 +1,67 @@
+Setup:
+============================================
+1 jenkins server
+1 apache tomcat server
+============================================
+--> In jenkins build a maven job.
+--> Build the maven job as first sanario.
+--> After building the job create an ansible user in jenkins server and apache tomcat server.
+--> Make the ansible sudo user.
+     $ visudo 
+   # Allow root to run any commands anywhere
+     root 	ALL=(ALL) 	ALL
+     ansible 	ALL=(ALL)	NOPASSWD: ALL
+Save and exit
+
+--> Enable passwordless authentication as below.
+   $ vi /etc/ssh/sshd_copnfig file
+     In 65 line replace no with yes.
+     save and exit
+  $ service sshd reload
+-->  Configure the same as above on Tomcat server also.
+  
+--> Generate the key fo rpasswordless authentication.
+  $  ssh-keygen
+--> copy the key into target syytem(apache tomcat server).
+    ssh-copy-id ansible@tomcat_server
+-->Try to ssh the tomcat_server
+--> add remoter server ip in anisble "host" file
+  $ vi /etc/ansible/hosts
+   tomcat_server ip
+--> check the ansible command 
+  ansible all -m ping
+--> install the ansible plug-in in jenkins console.
+  jenkins--> manage jenkins--> manage plug-in-->publish over ssh(plugiin)
+--> write a playbook to copy a war file into tomcat_server
+  vi copy.yml
+  ---
+  - hosts: web_servers 
+    become: true // execute all this instruction as root user.
+    tasks: 
+       - name: copy war file onto tomcat server
+         copy:
+           src: /opt/playbooks/webapp/target/webapp.war 
+           dest: /root/apache-tomcat-8.5.38/webapps
+  save and exit.
+-->  To execute this playbook by jenkins
+  On jenkins console--> manage jenkins--> configuration system(here we need to specify the
+  target systems.
+--> click ssh servers--> add --> name: ansible_server
+                                 hostname: ansibles private ip
+                                 username: ansible
+                                 password: ansible-->test configure
+                                 remote Directory  
+
+
+-->afte completing above steps maven job-->configure
+   In post-build actions-->send or execute commandover ssh-->
+  --> name Ansible_server-->source:/webapp/target/*.war
+  --> remote directory: //opt//playbooks
+  again create one more public over ssh
+ --> name : nsible_server
+ --> exec command: ansible-laybook /opt/playbooks/copy.yml
+
+--> build the job.
+   
+   
+
